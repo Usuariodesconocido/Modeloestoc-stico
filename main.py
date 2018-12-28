@@ -30,12 +30,12 @@ def get_general_conf(name):
 
 if __name__ == '__main__':
     generalconf = get_general_conf('Mconf')
-    autorregresiveconf = get_general_conf('Arconf')
+    autorregresiveconf = get_general_conf('ARconf')
 
     logging.basicConfig(
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG)
     logging.info('MOdelo estocastico')
 
-    base = BaseModel(Mconf=generalconf)
+    base = BaseModel(Mconf=generalconf, ARconf=autorregresiveconf)
     M = base.calculate_matrix_M(Mconf=generalconf)
