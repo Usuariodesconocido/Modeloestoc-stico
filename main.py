@@ -36,5 +36,5 @@ if __name__ == '__main__':
         level=logging.DEBUG)
     logging.info('MOdelo estocastico')
 
-    base = BaseModel(generalconf)
-    M = base.calculate_matrix_M()
+    base = BaseModel(Mconf=generalconf)
+    M = base.calculate_matrix_M(Mconf=generalconf)
