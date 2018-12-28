@@ -3,6 +3,7 @@ import logging
 
 import sys
 sys.path.insert(0, './src')
+from BaseModel import BaseModel
 
 def ConfigSectionMap(section, Config):
     dict1 = {}
@@ -34,3 +35,6 @@ if __name__ == '__main__':
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG)
     logging.info('MOdelo estocastico')
+
+    base = BaseModel(generalconf)
+    M = base.calculate_matrix_M()
