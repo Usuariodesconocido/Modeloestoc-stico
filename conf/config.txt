@@ -6,9 +6,9 @@ Hmin:0.06
 Hmax:0.7
 Bmin:1
 Bmax:3
-resolutionK:4 
-resolutionH:4
-resolutionB:4
+kresolution:4 
+hresolution:4
+bresolution:4
 delta:2.5213
 alfa:0.3
 gamma:0.0139
