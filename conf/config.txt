@@ -1,4 +1,4 @@
-[General]
+[Mconf]
 name:hola
 Kmin:0.1
 Kmax:4
@@ -6,12 +6,18 @@ Hmin:0.06
 Hmax:0.7
 Bmin:1
 Bmax:3
-kresolution:4 
-hresolution:4
-bresolution:4
+kresolution:100
+hresolution:100
 delta:2.5213
 alfa:0.3
 gamma:0.0139
 beta:0.9575
 n:0.0173
 sigma:0.0262
+
+[ARconf]
+mu:0.05
+rho:0.95
+sig:0.1
+bresolution:85
+m:3

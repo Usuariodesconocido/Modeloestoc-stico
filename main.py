@@ -29,7 +29,8 @@ def get_general_conf(name):
     return myprior
 
 if __name__ == '__main__':
-    generalconf = get_general_conf('General')
+    generalconf = get_general_conf('Mconf')
+    autorregresiveconf = get_general_conf('Arconf')
 
     logging.basicConfig(
         format='%(asctime)s %(levelname)s:%(message)s',
