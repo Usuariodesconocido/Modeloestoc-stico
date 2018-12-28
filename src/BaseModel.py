@@ -1,7 +1,7 @@
 import math
 import json
 import numpy as np
-
+from decimal import Decimal
 
 class BaseModel:
     def __init__(self,
@@ -18,12 +18,12 @@ class BaseModel:
                          stocasticproc):
         aux = (stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"])) +
                (1-float(conf["delta"]))*cap)/(1+float(conf["gamma"]))*(1 + float(conf["n"]))
-        if aux < 0:
+        if aux < capprima:
             return -10000
         else:
-            return math.log(stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"])) -
+            return math.log1p(Decimal(stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"])) -
                             (1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima +
-                            (1-float(conf["delta"]))*cap)+float(conf["delta"])*math.log(1-workS)
+                            (1-float(conf["delta"]))*cap))+(float(conf["delta"])*math.log1p(float(1-workS)))
 
     def calculate_matrix_M(self, Mconf=None):
         if Mconf is None:
@@ -35,7 +35,7 @@ class BaseModel:
         else:
             cc = Mconf
 
-        print json.dumps(cc, indent=2)
+        print (cc)
 
         kvalues = np.linspace(
             float(cc["kmin"]), float(cc["kmax"]), float(cc["kresolution"]))
@@ -70,7 +70,7 @@ class BaseModel:
                                                     bvalues[auxc])
 
         return toret
-
+        logging.info(toret)
 
 if __name__ == '__main__':
     pass
