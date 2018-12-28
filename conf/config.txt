@@ -1,2 +1,17 @@
 [General]
 name:hola
+Kmin:0.1
+Kmax:4
+Hmin:0.06
+Hmax:0.7
+Bmin:1
+Bmax:3
+resolutionK:4 
+resolutionH:4
+resolutionB:4
+delta:2.5213
+alfa:0.3
+gamma:0.0139
+beta:0.9575
+n:0.0173
+sigma:0.0262
