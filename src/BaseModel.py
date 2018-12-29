@@ -20,14 +20,14 @@ class BaseModel:
                          workS,
                          stocasticproc):
         aux = (stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"])) +
-               (1-float(conf["delta"]))*cap)/(1+float(conf["gamma"]))*(1 + float(conf["n"]))
+               (1-float(conf["sigma"]))*cap)-((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima)
 
-        if aux < capprima:
+        if aux < 0:
             return -10000
         else:
-            values = math.log1p(stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"])) -
-                                (1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima +
-                                (1-float(conf["delta"]))*cap)+(float(conf["delta"])*math.log1p(float(1-workS)))
+            values = math.log1p(stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"]))
+                                + ((1-float(conf["sigma"]))*cap) - ((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima))
+            +(float(conf["delta"])*math.log1p(float(1-workS)))
 
             return values
 
@@ -51,7 +51,8 @@ class BaseModel:
             int(conf["m"])*math.sqrt(pow(sig, 2) /
                                      (1-(pow(float(conf["rho"]), 2))))
 
-        step = (s[int(conf["bresolution"])-1, :] - s[0, :]) / (int(conf["bresolution"])-1)
+        step = (s[int(conf["bresolution"])-1, :] - s[0, :]) / \
+            (int(conf["bresolution"])-1)
 
         for i in range(1, int(conf["bresolution"])-1):
             s[i, :] = s[i-1, :]+step
@@ -89,8 +90,6 @@ class BaseModel:
         else:
             ca = ARconf
 
-        print(ca)
-
         kvalues = np.linspace(
             float(cc["kmin"]), float(cc["kmax"]), float(cc["kresolution"]))
         hvalues = np.linspace(
@@ -98,25 +97,21 @@ class BaseModel:
 
         bvalues = self.calculate_bvalues(ca)
 
-        print(kvalues)
-        print(hvalues)
-        print(bvalues)
-
         toret = [[0 for x in range(int(float(cc["kresolution"])*int(float(cc["bresolution"]))))]
                  for y in range(0, int(float(cc["kresolution"])*int(float(cc["hresolution"]))))]
 
-        countc = 0
+        countc = -1
         auxc = 0
-        for col in range(0, int(float(cc["kresolution"])-1)*int(float(cc["bresolution"])-1)):
+        for col in range(0, int(float(cc["kresolution"]))*int(float(cc["bresolution"]))):
             if countc == float(cc["kresolution"])-1:
                 countc = 0
                 auxc = auxc + 1
             else:
                 countc = countc + 1
 
-            countf = 0
+            countf = -1
             auxf = 0
-            for fila in range(0, int(float(cc["kresolution"])-1)*int(float(cc["hresolution"])-1)):
+            for fila in range(0, int(float(cc["kresolution"]))*int(float(cc["hresolution"]))):
                 if countf == float(cc["kresolution"])-1:
                     countf = 0
                     auxf = auxf + 1
@@ -130,6 +125,9 @@ class BaseModel:
                                           bvalues[auxc])
 
                 toret[col][fila] = b
+                print(fila)
+                print(col)
+                print("///////////////////////////////////")
 
         return toret
 
