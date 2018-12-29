@@ -19,15 +19,16 @@ class BaseModel:
                          capprima,
                          workS,
                          stocasticproc):
-        aux = (stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"])) +
-               (1-float(conf["sigma"]))*cap)-((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima)
+
+        aux = (stocasticproc*cap**float(conf["alfa"])*workS**(1-float(conf["alfa"])) + (
+            1-float(conf["sigma"]))*cap)-((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima)
 
         if aux < 0:
             return -10000
         else:
-            values = math.log1p(stocasticproc*pow(cap, float(conf["alfa"]))*pow(workS, 1-float(conf["alfa"]))
-                                + ((1-float(conf["sigma"]))*cap) - ((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima))
-            +(float(conf["delta"])*math.log1p(float(1-workS)))
+
+            values = math.log((stocasticproc*(cap**float(conf["alfa"]))*(workS**(1-float(conf["alfa"])))) + ((1-float(conf["sigma"]))*cap) - (
+                (1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima))+(float(conf["delta"])*math.log(float(1-workS)))
 
             return values
 
@@ -125,9 +126,6 @@ class BaseModel:
                                           bvalues[auxc])
 
                 toret[col][fila] = b
-                print(fila)
-                print(col)
-                print("///////////////////////////////////")
 
         return toret
 
