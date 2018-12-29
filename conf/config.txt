@@ -6,8 +6,9 @@ Hmin:0.06
 Hmax:0.7
 Bmin:1
 Bmax:3
-kresolution:100
-hresolution:100
+kresolution:4
+hresolution:4
+bresolution:4
 delta:2.5213
 alfa:0.3
 gamma:0.0139
@@ -16,8 +17,11 @@ n:0.0173
 sigma:0.0262
 
 [ARconf]
-mu:0.05
 rho:0.95
-sig:0.1
-bresolution:85
+bresolution:4
+alfa:0.3
 m:3
+ke:2.9
+ce:0.8329
+he:0.25
+ie:0.1671
