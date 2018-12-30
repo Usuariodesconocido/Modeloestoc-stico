@@ -69,7 +69,6 @@ class BaseModel:
                 else:
                     pi[j][k] = 0.5*special.erfc((-1*(s[k, :]-mu-float(conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(
                         2))-0.5*special.erfc((-(s[k, :]-mu-float(conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(2))
-
         return s
 
     def calculate_matrix_M(self, Mconf=None, ARconf=None):
