@@ -35,8 +35,8 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='%(asctime)s %(levelname)s:%(message)s',
         level=logging.DEBUG)
-    logging.info('MOdelo estocastico')
+    logging.info('Modelo estocastico')
 
     base = BaseModel(Mconf=generalconf, ARconf=autorregresiveconf)
     M = base.calculate_matrix_M(Mconf=generalconf)
-    V= base.value_function(Mconf=generalconf)
+    VV= base.value_function(Mconf=generalconf)
