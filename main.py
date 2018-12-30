@@ -39,3 +39,4 @@ if __name__ == '__main__':
 
     base = BaseModel(Mconf=generalconf, ARconf=autorregresiveconf)
     M = base.calculate_matrix_M(Mconf=generalconf)
+    V= base.value_function(Mconf=generalconf)

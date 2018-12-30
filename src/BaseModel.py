@@ -20,8 +20,8 @@ class BaseModel:
                          workS,
                          stocasticproc):
 
-        aux = (stocasticproc*cap**float(conf["alfa"])*workS**(1-float(conf["alfa"])) + (
-            1-float(conf["sigma"]))*cap)-((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima)
+        aux = (stocasticproc*cap**float(conf["alfa"])*workS**(1-float(conf["alfa"])) +
+               (1-float(conf["sigma"]))*cap)-((1+float(conf["gamma"]))*(1 + float(conf["n"]))*capprima)
 
         if aux < 0:
             return -10000
@@ -128,6 +128,120 @@ class BaseModel:
                 toret[col][fila] = b
 
         return toret
+
+
+# aldskjfhañdkfhsñdfdsalkñfa´lfdak´lfjal´ksfja´kldfa´lsdfhah
+
+    def autorregresive_matrix(self, conf):
+
+        th = (pow(float(conf["ke"]), -1*float(conf["alfa"]))
+              * (pow(float(conf["he"]), float(conf["alfa"])-1)))
+
+        mu = (1-float(conf["rho"]))*th
+        sig = 2*mu
+
+        s = np.zeros((int(conf["bresolution"]), 1))
+
+        pi = np.zeros((int(conf["bresolution"]), int(conf["bresolution"])))
+
+        s[0, :] = mu/(1-float(conf["rho"]))-int(conf["m"]) * \
+            math.sqrt(pow(sig, 2) /
+
+                      (1-(pow(float(conf["rho"]), 2))))
+        s[int(conf["bresolution"])-1, :] = mu/(1-float(conf["rho"])) + \
+            int(conf["m"])*math.sqrt(pow(sig, 2) /
+                                     (1-(pow(float(conf["rho"]), 2))))
+
+        step = (s[int(conf["bresolution"])-1, :] - s[0, :]) / \
+            (int(conf["bresolution"])-1)
+
+        for i in range(1, int(conf["bresolution"])-1):
+            s[i, :] = s[i-1, :]+step
+
+        for j in range(0, int(conf["bresolution"])-1):
+            for k in range(0, int(conf["bresolution"])-1):
+                if k == 0:
+                    pi[j][k] = 0.5*special.erfc((-1*(s[0, :]-mu-float(
+                        conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(2))
+                elif k == int(conf["bresolution"]):
+                    pi[j][k] = 1-(0.5*special.erfc((-(s[int(conf["bresolution"])-1, :] -
+                                                      mu-float(conf["rho"]*s[j, :])+step/2)/sig)/math.sqrt(2)))
+                else:
+                    pi[j][k] = 0.5*special.erfc((-1*(s[k, :]-mu-float(conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(
+                        2))-0.5*special.erfc((-(s[k, :]-mu-float(conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(2))
+                print(pi)
+        return pi
+
+    def value_function(self, Mconf=None, ARconf=None):
+        if Mconf is None:
+            if self.Mconf is not None:
+                cc = self.Mconf
+            else:
+                logging.critical("NO CONF")
+                return
+        else:
+            cc = Mconf
+
+        if ARconf is None:
+            if self.ARconf is not None:
+                ca = self.ARconf
+            else:
+                logging.critical("NO CONF")
+                return
+        else:
+            ca = ARconf
+       
+        Initialvalue = np.zeros(((int(cc["bresolution"])*int(cc["kresolution"])), 1))
+        v = Initialvalue
+        V = np.ones((int(cc["bresolution"])*int(cc["kresolution"]), 1))
+
+        pi = self.autorregresive_matrix(ca)
+        s = self.calculate_bvalues(ca)
+        M = self.calculate_matrix_M(cc)
+
+        dist = np.linalg.norm(V-v)
+
+        W = np.zeros((int(cc["bresolution"]),int(cc["kresolution"])))
+
+
+        while dist > float(0.0001):
+            v = V
+            for fila in range(0, int(cc["kresolution"])-1):
+                for col in range(0, int(cc["bresolution"])-1):
+                    W[fila][col] = 0
+                    for j in range(1, int(cc["kresolution"])-1):
+                        W[fila][col] = W[fila, col] + \
+                            (pi[fila, col]) * \
+                            V[(j-1)*int(cc["kresolution"])+s, :]
+
+        countc = -1
+        auxc = 0
+        for col in range(0, int(float(cc["kresolution"]))*int(float(cc["bresolution"]))):
+            if countc == float(cc["kresolution"])-1:
+                countc = 0
+                auxc = auxc + 1
+            else:
+                countc = countc + 1
+
+            countf = -1
+            auxf = 0
+            for fila in range(0, int(float(cc["kresolution"]))*int(float(cc["hresolution"]))):
+                if countf == float(cc["kresolution"])-1:
+                    countf = 0
+                    auxf = auxf + 1
+                else:
+                    countf = countf + 1
+
+                    BELL[int(float(cc["kresolution"]))*(countc-1)+auxc, int(float(cc["kresolution"]))*(auxf-1)+countf] = \
+                        M[int(float(cc["kresolution"]))*(countc-1)+auxc, int(float(cc["kresolution"]))
+                          * (auxf-1)+countf]+float(conf["beta"])*W[countc, countf]
+
+        g = np.argmax(BELL, axis=1)
+        V = np.amax(BELL, axis=1)
+        counter = counter+1
+        
+
+        return V
 
 
 if __name__ == '__main__':
