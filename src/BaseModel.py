@@ -162,7 +162,7 @@ class BaseModel:
                 else:
                     pi[j][k] = 0.5*special.erfc(-1*((s[k, :]-mu-float(conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(
                         2))-0.5*special.erfc(-1*((s[k, :]-mu-float(conf["rho"])*s[j, :]-step/2)/sig)/math.sqrt(2))
-        print(pi)
+        
         return pi
 
     def value_function(self, Mconf=None, ARconf=None):
@@ -193,18 +193,34 @@ class BaseModel:
         s = self.calculate_bvalues(ca)
         O = self.calculate_matrix_M(cc)
         M = np.array(O)
+        
 
         W = np.zeros((int(cc["bresolution"]), int(cc["kresolution"])))
 
-        while np.linalg.norm(V-v) > float(0.0001):
+        while np.linalg.norm(V-v) > float(0.00000000001):
             v = V
+            count=-1
+            aux=0
             for fila in range(0, int(cc["kresolution"])):
                 for col in range(0, int(cc["bresolution"])):
                     W[fila][col] = 0
+                    
                     for j in range(0, int(cc["kresolution"])):
-                        W[fila][col] = W[fila, col] + \
-                            (pi[fila, j]) * \
-                            V[(j-1)*int(cc["kresolution"])+col, ]
+                        if count==int(cc["kresolution"])-1:
+                            count=0
+                        else:
+                            count=count+1
+                        if count==0:
+                            aux=0
+                        else:
+                            aux=(count)*int(cc["kresolution"])
+                            
+                        
+                            W[fila][col] = W[fila, col] + \
+                                ((pi[fila, count-1]) * \
+                                V[(((j-1)*int(cc["kresolution"]))+col), ])
+
+                    
 
             BELL = np.zeros((int(float(cc["kresolution"]))*int(float(cc["hresolution"])), int(
                 float(cc["kresolution"]))*int(float(cc["bresolution"]))))
@@ -230,19 +246,26 @@ class BaseModel:
                     i2 = int((int(cc["kresolution"])*(auxf-1)+countf)-1)
 
                     BELL[i1][i2] = \
-                        M[(int(((float(cc["kresolution"]))*(countc-1)+auxc)-1)), int(((float(
-                            cc["kresolution"]))*(auxf-1)+countf)-1)]+int(float(cc["beta"])*W[int(countc-1)][int(countf-1)])
-
+                        M[i1, i2]+(int(float(cc["beta"])*W[countc-1][countf-1]))
+                    
+                   
+                    
             G = np.argmax(BELL, axis=1)
             g=np.array(G)
             V = np.amax(BELL, axis=1)
+            
 
         VV = np.zeros((int(float(cc["bresolution"])), int(
             float(cc["kresolution"]))))
 
+
+        count=0
         for i in range(0, int(float(cc["bresolution"]))):
             for j in range(0, int(float(cc["kresolution"]))):
-                VV[i, j] = v[int(float(cc["kresolution"]))*(i-1)+j, ]
+
+                VV[i-1, j] = v[(int(float(cc["kresolution"]))*(i-1)+j), ]
+
+                
 
         # Representar graficamente VV
 
@@ -252,25 +275,42 @@ class BaseModel:
             float(cc["hmin"]), float(cc["hmax"]), float(cc["hresolution"]))
 
         # Funcion de politica para k
-        for i in range(0, int(float(cc["bresolution"]))):
-            for j in range(0, int(float(cc["kresolution"]))):
-                h = math.ceil(
-                    g[int(((i-1)*int(float(cc["kresolution"]))+j)/int(float(cc["kresolution"])))])
-               # s = g[int((i-1)*int(float(cc["kresolution"]))+j) -
-                #      (int(float(cc["kresolution"]))*(h-1))]
-                #K1[i, j] = kvalues[s]
-                H1[i, j] = hvalues[h]
+        g=np.array((g)) 
+        g=g+1
+         
+        K1 = np.zeros((int(cc["bresolution"]), int(cc["kresolution"])))
+        H1 = np.zeros((int(cc["bresolution"]), int(cc["kresolution"])))     
+        for i in range(1, int(cc["bresolution"])+1):
+            for j in range(1, int(cc["kresolution"])+1):
+                imp= int(((i-1)*int(cc["kresolution"]))+j)  
+
+            
+                h = math.ceil(g[int(imp)-1,]/(int(cc["kresolution"])))
+                s = g[int(imp)-1,]-(int(cc["kresolution"])*(h-1))
+                K1[i-1, j-1] = kvalues[s-1]
+                H1[i-1, j-1] = hvalues[h-1]
+                #print(K1)
+                #print("/////////////////////")
+                print(H1)
+            
+
+        
+        X, Y = np.meshgrid(kvalues, s)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        surface = ax.plot_surface(
+            X, Y, VV, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        X, Y = np.meshgrid(kvalues, s)
-        surface = ax.plot_surface(
-            X, Y, VV, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
-       # surface2 = ax.plot_surface(
-        #    X, Y, K1, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
+        surface2 = ax.plot_surface(
+            X, Y, K1, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
         surface3 = ax.plot_surface(
             X, Y, H1, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
 
-
+        
 if __name__ == '__main__':
     pass
