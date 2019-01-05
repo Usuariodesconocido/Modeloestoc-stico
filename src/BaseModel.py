@@ -86,7 +86,7 @@ class BaseModel:
             float(cc["kmin"]), float(cc["kmax"]), float(cc["kresolution"]))
         hvalues = np.linspace(
             float(cc["hmin"]), float(cc["hmax"]), float(cc["hresolution"]))
-
+        
         bvalues = self.calculate_bvalues(ca)
 
         toret = [[0 for x in range(int(float(cc["kresolution"])*int(float(cc["bresolution"]))))]
@@ -117,7 +117,6 @@ class BaseModel:
                                           bvalues[auxc])
 
                 toret[col][fila] = b
-
         return toret
 
 
@@ -156,8 +155,8 @@ class BaseModel:
                     pi[j][k] = 0.5*special.erfc(-1*((s[0, :]-mu-float(
                         conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(2))
 
-                elif k == (int(conf["bresolution"])-1):
-                    pi[j][k] = 1-(0.5*special.erfc(-1*((s[int(conf["bresolution"])-1, :] -
+                if k == (int(conf["bresolution"])):
+                    pi[j][k] = 1-(0.5*special.erfc(-1*((s[int(conf["bresolution"]), :] -
                                                         mu-float(conf["rho"])*s[j, :]-step/2)/sig)/math.sqrt(2)))
                 else:
                     pi[j][k] = 0.5*special.erfc(-1*((s[k, :]-mu-float(conf["rho"])*s[j, :]+step/2)/sig)/math.sqrt(
@@ -185,9 +184,9 @@ class BaseModel:
             ca = ARconf
 
         Initialvalue = np.zeros(
-            ((int(cc["bresolution"])*int(cc["kresolution"])), 1))
+            ((int(cc["bresolution"])*int(cc["kresolution"])), ))
         v = Initialvalue
-        V = np.ones((int(cc["bresolution"])*int(cc["kresolution"]), 1))
+        V = np.ones((int(cc["bresolution"])*int(cc["kresolution"]), ))
 
         pi = self.autorregresive_matrix(ca)
         s = self.calculate_bvalues(ca)
@@ -195,30 +194,24 @@ class BaseModel:
         M = np.array(O)
         
 
+        
+
         W = np.zeros((int(cc["bresolution"]), int(cc["kresolution"])))
 
-        while np.linalg.norm(V-v) > float(0.00000000001):
+        while np.linalg.norm(V-v,2) > float(0.00000000000000000001):
             v = V
-            count=-1
-            aux=0
-            for fila in range(0, int(cc["kresolution"])):
-                for col in range(0, int(cc["bresolution"])):
-                    W[fila][col] = 0
+
+            for fila in range(1, int(cc["kresolution"])+1):
+                for col in range(1, int(cc["bresolution"])+1):
+                    W[fila-1][col-1] = 0
                     
-                    for j in range(0, int(cc["kresolution"])):
-                        if count==int(cc["kresolution"])-1:
-                            count=0
-                        else:
-                            count=count+1
-                        if count==0:
-                            aux=0
-                        else:
-                            aux=(count)*int(cc["kresolution"])
+                    for j in range(1, int(cc["kresolution"])+1):
+
                             
                         
-                            W[fila][col] = W[fila, col] + \
-                                ((pi[fila, count-1]) * \
-                                V[(((j-1)*int(cc["kresolution"]))+col), ])
+                            W[fila-1][col-1] = W[fila-1, col-1] + \
+                                (pi[fila-1, j-1] * \
+                                V[(((j-1)*int(cc["kresolution"]))+col)-1, ])
 
                     
 
@@ -226,48 +219,51 @@ class BaseModel:
                 float(cc["kresolution"]))*int(float(cc["bresolution"]))))
             countc = 0
             auxc = 1
-            for col in range(0, int(float(cc["kresolution"]))*int(float(cc["bresolution"]))):
+            for col in range(1, int(float(cc["kresolution"]))*int(float(cc["bresolution"]))+1):
                 if countc == float(cc["kresolution"]):
                     countc = 1
                     auxc = auxc + 1
                 else:
                     countc = countc + 1
+                    
 
                 countf = 0
                 auxf = 1
-                for fila in range(0, int(float(cc["kresolution"]))*int(float(cc["hresolution"]))):
+                for fila in range(1, int(float(cc["kresolution"]))*int(float(cc["hresolution"]))+1):
                     if countf == float(cc["kresolution"]):
                         countf = 1
                         auxf = auxf + 1
                     else:
                         countf = countf + 1
 
-                    i1 = int((int(cc["kresolution"])*(countc-1)+auxc)-1)
-                    i2 = int((int(cc["kresolution"])*(auxf-1)+countf)-1)
+                    i1 = (int(cc["kresolution"])*(countc-1)+auxc)-1
+                    i2 = (int(cc["kresolution"])*(auxf-1)+countf)-1
 
                     BELL[i1][i2] = \
-                        M[i1, i2]+(int(float(cc["beta"])*W[countc-1][countf-1]))
+                        M[i1, i2]+((float(cc["beta"])*W[countc-1][countf-1]))
                     
                    
                     
             G = np.argmax(BELL, axis=1)
             g=np.array(G)
             V = np.amax(BELL, axis=1)
-            
-
+        
+        
         VV = np.zeros((int(float(cc["bresolution"])), int(
             float(cc["kresolution"]))))
 
 
-        count=0
-        for i in range(0, int(float(cc["bresolution"]))):
-            for j in range(0, int(float(cc["kresolution"]))):
 
-                VV[i-1, j] = v[(int(float(cc["kresolution"]))*(i-1)+j), ]
+        count=0
+        for i in range(1, int(float(cc["bresolution"]))+1):
+            for j in range(1, int(float(cc["kresolution"]))+1):
+
+                VV[i-1, j-1] = v[((int(float(cc["kresolution"]))*(i-1)+j))-1, ]
 
                 
 
         # Representar graficamente VV
+        
 
         kvalues = np.linspace(
             float(cc["kmin"]), float(cc["kmax"]), float(cc["kresolution"]))
@@ -291,7 +287,7 @@ class BaseModel:
                 H1[i-1, j-1] = hvalues[h-1]
                 #print(K1)
                 #print("/////////////////////")
-                print(H1)
+                #print(H1)
             
 
         
