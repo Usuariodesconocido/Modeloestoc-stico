@@ -1,6 +1,6 @@
 import configparser
 import logging
-
+import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, './src')
 from BaseModel import BaseModel
@@ -40,3 +40,5 @@ if __name__ == '__main__':
     base = BaseModel(Mconf=generalconf, ARconf=autorregresiveconf)
     M = base.calculate_matrix_M(Mconf=generalconf)
     VV= base.value_function(Mconf=generalconf)
+    F=base.value_function(Mconf=generalconf)
+    plt.show(F)

@@ -308,6 +308,6 @@ class BaseModel:
             X, Y, H1, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
         plt.show()
 
-        
+        return surface
 if __name__ == '__main__':
     pass
