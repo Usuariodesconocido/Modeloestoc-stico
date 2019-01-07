@@ -306,6 +306,7 @@ class BaseModel:
         ax = fig.add_subplot(111, projection='3d')
         surface3 = ax.plot_surface(
             X, Y, H1, rstride=1, cstride=10, cmap=cm.coolwarm, linewidth=0, antialiased=False,)
+        plt.show()
 
         
 if __name__ == '__main__':
