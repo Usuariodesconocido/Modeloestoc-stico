@@ -285,7 +285,7 @@ class BaseModel:
                 s = g[int(imp)-1,]-(int(cc["kresolution"])*(h-1))
                 K1[i-1, j-1] = kvalues[s-1]
                 H1[i-1, j-1] = hvalues[h-1]
-                #print(K1)
+                print(K1)
                 #print("/////////////////////")
                 #print(H1)
             
